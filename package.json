@@ -1,0 +1,14 @@
+{
+  "name": "frogger-arcade-clone",
+  "version": "0.0.1",
+  "devDependencies": {
+    "bootbox": "^4.4.0",
+    "bootstrap": "^3.3.2",
+    "grunt": "~0.4.5",
+    "grunt-contrib-concat": "^0.5.1",
+    "grunt-contrib-jshint": "~0.10.0",
+    "grunt-contrib-nodeunit": "~0.4.1",
+    "grunt-contrib-uglify": "~0.5.0",
+    "jquery": "^2.1.3"
+  }
+}
