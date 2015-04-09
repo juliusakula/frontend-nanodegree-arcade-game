@@ -28,12 +28,10 @@ var Engine = (function (global) {
      * to begin the game and calls the main function.
      */
     function init() {
-        bootbox.alert(openingMessage, function () {
-            bootbox.alert(instructionMessage, function () {
-                setupNewGame();
-                lastTime = Date.now();
-                main();
-            })
+        bootbox.alert("Use arrow keys to move.", function () {
+            setupNewGame();
+            lastTime = Date.now();
+            main();
         });
     }
 
@@ -108,6 +106,7 @@ var Engine = (function (global) {
         if (gamestate.level < 0) {
             invertCanvas();
         }
+        renderTomato();
     }
 
     /**
@@ -192,6 +191,19 @@ var Engine = (function (global) {
             ctx.fillStyle = '#00a7ff';
             ctx.textAlign = 'center';
             ctx.fillText("HADOUKEN!!!", player.x + 40, player.y + 30);
+        }
+    }
+
+    /**
+     * Temporarily draws/writes "HADOUKEN!!!" above the player when they use the
+     * hadouken attack.
+     */
+    function renderTomato() {
+        if (gamestate.hadouken) {
+            ctx.font = "60px bold Arial";
+            ctx.fillStyle = '#00a7ff';
+            ctx.textAlign = 'center';
+            ctx.fillText("TOE MAH TOE!!!", player.x + 40, player.y + 30);
         }
     }
 
@@ -518,6 +530,14 @@ var Engine = (function (global) {
                 newEnemy = new Sidestepper();
             } else if (newSelection === 'slowpoke') {
                 newEnemy = new Slowpoke();
+            } else if (newSelection === 'centipedeSidestepper') {
+                newEnemy = new CentipedeSidestepper();
+            } else if (newSelection === 'backtrackerSidestepper') {
+                newEnemy = new BacktrackerSidestepper();
+            } else if (newSelection === 'broodMother') {
+                newEnemy = new BroodMother();
+            } else if (newSelection === 'speedChanger') {
+                newEnemy = new SpeedChanger();
             } else {
                 newEnemy = new Centipede();
             }
@@ -535,21 +555,30 @@ var Engine = (function (global) {
     function calcEnemyWeights() {
         var enemyWeights = {
             'enemy': 1,
-            'charger': 0,
-            'backtracker': 0,
+            'charger': 1,
+            'backtracker': 1,
             'sidestepper': 0,
-            'slowpoke': 0,
-            'centipede': 0
+            'slowpoke': 1,
+            'centipede': 0,
+            'centipedeSidestepper': 0,
+            'backtrackerSidestepper': 0,
+            'broodMother': 0,
+            'speedChanger': 1
+
         };
         if (gamestate.level > 5) {
             for (var i = 0; i < gamestate.level - 2; i++) {
                 if (enemyWeights.enemy > 0) {
-                    enemyWeights.enemy -= 0.05;
-                    enemyWeights.charger += 0.01;
-                    enemyWeights.backtracker += 0.01;
-                    enemyWeights.sidestepper += 0.01;
-                    enemyWeights.slowpoke += 0.01;
-                    enemyWeights.centipede += 0.01;
+                    enemyWeights.enemy -= 0.1;
+                    enemyWeights.charger += 0.075;
+                    enemyWeights.backtracker += 0.1;
+                    enemyWeights.sidestepper += 0.1;
+                    enemyWeights.slowpoke += 0.1;
+                    enemyWeights.centipede += 0.1;
+                    enemyWeights.centipedeSidestepper += 0.075;
+                    enemyWeights.backtrackerSidestepper += 0.075;
+                    enemyWeights.broodMother += 0.05;
+                    enemyWeights.speedChanger += .075;
                 }
             }
         }
@@ -634,10 +663,16 @@ var Engine = (function (global) {
         'images/charger.png',
         'images/charger-charging.png',
         'images/sidestepper.png',
+        'images/sidestepper-reverse.png',
         'images/backtracker.png',
         'images/backtracker-reverse.png',
+        'images/enemy-bug-white.png',
+        'images/enemy-bug-white-reverse.png',
+        'images/brood-mother.png',
+        'images/speed-changer.png',
         'images/slowpoke.png',
         'images/centipede.png',
+        'images/centipede-sidestepper.png',
         'images/Heart.png',
         'images/Heart-small.png',
         'images/Gem Blue.png',
@@ -652,10 +687,13 @@ var Engine = (function (global) {
         'images/char-boy-blink3.png',
         'images/Hadouken-right.png',
         'images/Hadouken-left.png',
+        'images/tomato-left.png',
+        'images/tomato-right.png',
         'images/Selector.png',
         'images/nothing.png',
         'images/Udacity.png',
-        'images/Front-End.png'
+        'images/Front-End.png',
+        'images/fish.png'
     ]);
     Resources.onReady(init);
 

@@ -6,8 +6,8 @@
 var Player = function () {
     this.width = 60;
     this.height = 80;
-    this.maxLives = 5;
-    this.lives = 3;
+    this.maxLives = 20;
+    this.lives = 10;
     this.isInvincible = false;
     this.hasKey = false;
     this.startX();

@@ -12,10 +12,10 @@ var Tomato = function (input) {
     Attack.call(this);
     if (input === 'a') {
         this.speed = -300;
-        this.sprite = 'images/Hadouken-left.png';
+        this.sprite = 'images/tomato-left.png';
     } else if (input === 'd') {
         this.speed = 300;
-        this.sprite = 'images/Hadouken-right.png';
+        this.sprite = 'images/tomato-right.png';
     }
 };
 

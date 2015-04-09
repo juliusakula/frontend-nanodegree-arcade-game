@@ -1,5 +1,5 @@
 module.exports = function(grunt) {
-    var filesToWatch = [
+    var filesToMakeAppJS = [
         'js/app/gameVars.js',
 
         'js/app/enemies/enemy.js',
@@ -9,6 +9,9 @@ module.exports = function(grunt) {
         'js/app/enemies/slowpoke.js',
         'js/app/enemies/centipede.js',
         'js/app/enemies/centipede-sidestepper.js',
+        'js/app/enemies/backtracker-sidestepper.js',
+        'js/app/enemies/brood-mother.js',
+        'js/app/enemies/speed-changer.js',
 
         'js/app/player/player.js',
         'js/app/player/attack.js',
@@ -29,13 +32,17 @@ module.exports = function(grunt) {
         'js/app/tiles/startPoint.js',
         'js/app/tiles/door.js',
         'js/app/tiles/rock.js'];
+
+    var filesToWatch = function(){
+        return filesToMakeAppJS;
+    };
     // Project configuration.
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
         concat: {
             app: {
                 banner: '/* <%= grunt.template.today("yyyy-mm-dd") %> */\n',
-                src: filesToWatch,
+                src: filesToMakeAppJS,
                 dest: 'js/app/app.js'
             }
         },

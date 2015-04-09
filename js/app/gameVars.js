@@ -167,6 +167,8 @@ var GameState = function () {
         'tomato': false
     };
     this.hadouken = false;
+
+
     this.tomato = false;
 };
 
@@ -179,7 +181,7 @@ window.addEventListener("keydown", function (e) {
 }, false);
 
 // This listens for key presses and sends the keys to your
-// Player.handleInput() method. You don't need to modify this.
+// Player.handleInput() method.
 document.addEventListener('keyup', function (e) {
     var allowedKeys = {
         37: 'left',
@@ -188,10 +190,10 @@ document.addEventListener('keyup', function (e) {
         40: 'down',
         80: 'p',
         67: 'c',
-        65: 'a',
-        68: 'd',
         81: 'q',
-        69: 'e'
+        69: 'e',
+        65: 'a',
+        68: 'd'
     };
     // Game initializes with a dialog box popping up.  The game hasn't been set
     // up yet, so this checks if player has been defined to prevent the console

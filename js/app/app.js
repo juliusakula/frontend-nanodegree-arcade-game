@@ -167,6 +167,8 @@ var GameState = function () {
         'tomato': false
     };
     this.hadouken = false;
+
+
     this.tomato = false;
 };
 
@@ -179,7 +181,7 @@ window.addEventListener("keydown", function (e) {
 }, false);
 
 // This listens for key presses and sends the keys to your
-// Player.handleInput() method. You don't need to modify this.
+// Player.handleInput() method.
 document.addEventListener('keyup', function (e) {
     var allowedKeys = {
         37: 'left',
@@ -188,10 +190,10 @@ document.addEventListener('keyup', function (e) {
         40: 'down',
         80: 'p',
         67: 'c',
-        65: 'a',
-        68: 'd',
         81: 'q',
-        69: 'e'
+        69: 'e',
+        65: 'a',
+        68: 'd'
     };
     // Game initializes with a dialog box popping up.  The game hasn't been set
     // up yet, so this checks if player has been defined to prevent the console
@@ -714,14 +716,183 @@ CentipedeSidestepper.prototype.sidestep = function () {
 };
 
 /**
+ * An enemy that turns around when it gets past the edge of the screen.
+ * It will also randomly turn around sometimes.
+ * @constructor
+ * @extends Enemy
+ */
+var BacktrackerSidestepper = function () {
+    Enemy.call(this);
+    this.sideStepSpeed = 0;
+    this.newY = this.y;
+    this.sprite = 'images/enemy-bug-white.png';
+    this.speed = 110;
+    this.backtrack();
+    this.sidestep();
+};
+BacktrackerSidestepper.prototype = Object.create(Enemy.prototype);
+BacktrackerSidestepper.prototype.constructor = BacktrackerSidestepper;
+
+/**
+ * Updates x position of enemy based on its speed and dt if the game
+ * isn't paused.  If the enemy moves past the right or left edge of the
+ * screen, it will change direction.
+ * @param {number} dt Time between each execution of main function.
+ */
+BacktrackerSidestepper.prototype.update = function (dt) {
+    if (!gamestate.paused) {
+        this.x += dt * this.speed * gamestate.speed;
+        this.y += dt * this.sideStepSpeed * gamestate.speed;
+        // If this sidestepper has reached or passed its target row,
+        // set it's y-position to the target row and stop its y-movement.
+        if (this.sideStepSpeed > 0 && this.y > this.newY || this.sideStepSpeed < 0 && this.y < this.newY) {
+            this.y = this.newY;
+            this.sideStepSpeed = 0;
+        }
+    }
+    if (this.left() > X_RIGHT + 2 * X_STEP && this.speed > 0 || this.right() < X_LEFT - 2 * X_STEP && this.speed < 0) {
+        // Multiply speed by negative one to turn around.
+        this.speed *= -1;
+    }
+    if (this.speed > 0) {
+        this.sprite = 'images/enemy-bug-white.png';
+    } else {
+        this.sprite = 'images/enemy-bug-white-reverse.png';
+    }
+};
+
+/**
+ * This method will set an interval for this enemy to "flip a coin" (produce
+ * a random number) to see if it will change direction.  If the enemy turns
+ * around, its sprite also needs to be replaced so it is facing the correct
+ * direction.
+ */
+BacktrackerSidestepper.prototype.backtrack = function () {
+    // self is used to access this inside the setInterval function.
+    var self = this;
+    var backtrackInterval = randInt(3000, 9000);
+    setInterval(function () {
+        var willBacktrack = Math.random();
+        if (willBacktrack > 0.3) {
+            self.speed *= -1;
+        }
+    }, backtrackInterval);
+};
+
+/**
+ * This method will set an interval for this enemy to "flip a coin" (produce
+ * a random number) to see if it will step up or down.  If this enemy will step,
+ * then there is another "coin flip" to check if the direction will be up or
+ * down.
+ */
+BacktrackerSidestepper.prototype.sidestep = function () {
+    // self is used to access this inside the setInterval function.
+    var self = this;
+    var steppingInterval = randInt(2000, 5000);
+    var newY;
+    setInterval(function () {
+        var willStep = Math.random();
+        if (willStep > 0.3 && self.sideStepSpeed === 0) {
+            var upOrDown = Math.random();
+            // Make sure this enemy won't be moving into the bottom row
+            // (where the player starts) by moving down.
+            if (upOrDown >= 0.5 && self.y < Y_BOTTOM - 2 * Y_STEP) {
+                self.newY = self.y + Y_STEP;
+                self.sideStepSpeed = 100;
+                // Make sure this enemy won't be moving into the top row
+                // (with the end point) by moving up.
+            } else if (upOrDown < 0.5 && self.y > Y_TOP + Y_STEP) {
+                self.newY = self.y - Y_STEP;
+                self.sideStepSpeed = -100;
+            }
+        }
+    }, steppingInterval)
+};
+/**
+ * An enemy with a slow base speed, that spawns additional enemies
+ * @constructor
+ * @extends Enemy
+ */
+var BroodMother = function () {
+    Enemy.call(this);
+    this.sprite = 'images/brood-mother.png';
+    this.minSpeed = 15;
+    this.maxSpeed = 25;
+    this.maxChildren = 3;
+    this.numChildren = 0;
+    this.setSpeed();
+    this.spawn();
+};
+
+BroodMother.prototype = Object.create(Enemy.prototype);
+BroodMother.prototype.constructor = BroodMother;
+
+/**
+ * This method will set an interval for this enemy to "flip a coin" (produce
+ * a random number) to see if it will spawn an enemy.
+ */
+BroodMother.prototype.spawn = function () {
+    // self is used to access this inside the setInterval function.
+    var self = this;
+    var backtrackInterval = randInt(1000, 4000);
+    setInterval(function () {
+        var spawnNow = Math.random();
+        if (spawnNow > 0.1) {
+            if(self.numChildren < self.maxChildren){
+                var enemyAtLoc = new BacktrackerSidestepper();
+                enemyAtLoc.x = self.x;
+                enemyAtLoc.y = self.y;
+                allEnemies.push(enemyAtLoc);
+                var backwardEnemy = new Backtracker();
+                backwardEnemy.speed *= -1;
+                backwardEnemy.x = self.x;
+                backwardEnemy.y = self.y;
+                backwardEnemy.sprite = 'images/backtracker-reverse.png';
+                allEnemies.push(backwardEnemy);
+                self.numChildren++;
+            }
+        }
+    }, backtrackInterval);
+};
+/**
+ * An enemy with a slow base speed, that spawns additional enemies
+ * @constructor
+ * @extends Enemy
+ */
+var SpeedChanger = function () {
+    Enemy.call(this);
+    this.sprite = 'images/speed-changer.png';
+    this.minSpeed = 15;
+    this.maxSpeed = 175;
+    this.setSpeed();
+    this.changeSpeed();
+};
+
+SpeedChanger.prototype = Object.create(Enemy.prototype);
+SpeedChanger.prototype.constructor = SpeedChanger;
+
+/**
+ * This method will set an interval for this enemy to "flip a coin" (produce
+ * a random number) to see if it will spawn an enemy.
+ */
+SpeedChanger.prototype.changeSpeed = function () {
+    // self is used to access this inside the setInterval function.
+    var self = this;
+    var speedChangeInterval = randInt(750, 2750);
+    setInterval(function () {
+        self.setSpeed();
+    }, speedChangeInterval);
+};
+
+/**
  * A player class for the user to control.
  * @constructor
  */
 var Player = function () {
     this.width = 60;
     this.height = 80;
-    this.maxLives = 5;
-    this.lives = 3;
+    this.maxLives = 20;
+    this.lives = 10;
     this.isInvincible = false;
     this.hasKey = false;
     this.startX();
@@ -1085,10 +1256,10 @@ var Tomato = function (input) {
     Attack.call(this);
     if (input === 'a') {
         this.speed = -300;
-        this.sprite = 'images/Hadouken-left.png';
+        this.sprite = 'images/tomato-left.png';
     } else if (input === 'd') {
         this.speed = 300;
-        this.sprite = 'images/Hadouken-right.png';
+        this.sprite = 'images/tomato-right.png';
     }
 };
 
