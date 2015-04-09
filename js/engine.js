@@ -663,7 +663,6 @@ var Engine = (function (global) {
         'images/charger.png',
         'images/charger-charging.png',
         'images/sidestepper.png',
-        'images/sidestepper-reverse.png',
         'images/backtracker.png',
         'images/backtracker-reverse.png',
         'images/enemy-bug-white.png',
@@ -692,8 +691,7 @@ var Engine = (function (global) {
         'images/Selector.png',
         'images/nothing.png',
         'images/Udacity.png',
-        'images/Front-End.png',
-        'images/fish.png'
+        'images/Front-End.png'
     ]);
     Resources.onReady(init);
 
