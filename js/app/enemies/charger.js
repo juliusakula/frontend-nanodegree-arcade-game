@@ -42,7 +42,7 @@ Charger.prototype.charging = function () {
                 if (!gamestate.activeCheats.cow) {
                     self.sprite = 'images/charger.png';
                 }
-            }, 500);
+            }, 450);
         }
     }, chargingInterval)
 };

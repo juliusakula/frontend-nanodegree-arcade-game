@@ -1,3 +1,6 @@
+/**
+ * The first part of app.js comes from js/app/gameVars.js
+ */
 
 /**
  * @const
@@ -10,7 +13,7 @@ var X_LEFT = 0,
     Y_STEP = 83,
     X_CANVAS = 707,
     Y_CANVAS = 606,
-    DARK_LEVELS = 25;
+    DARK_LEVELS = 14;
 
 // Declare Entities
 var gamestate;
@@ -454,7 +457,7 @@ Charger.prototype.charging = function () {
                 if (!gamestate.activeCheats.cow) {
                     self.sprite = 'images/charger.png';
                 }
-            }, 500);
+            }, 450);
         }
     }, chargingInterval)
 };

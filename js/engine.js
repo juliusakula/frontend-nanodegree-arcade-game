@@ -45,7 +45,9 @@ var Engine = (function (global) {
                     description: 'it occasionally switches lanes.'
                 }
             ];
-        var helloMsg = "<h3 id='top'>Use arrow keys to move. Avoid bugs, they will kill you.</h3>" +
+        var helloMsg = "<br id='top'>" +
+                "<img src='images/char-boy.png' class='intro-bug'>" +
+            "<h4>This is you.</h4>" +
                 "<img src='images/Key.png' class='intro-bug'>" +
                 "<img src='images/Door.png' class='intro-bug'><br>" +
             "<h4>Your goal is to get the key, and then use it to get past the gate.</h4>" +
@@ -56,11 +58,12 @@ var Engine = (function (global) {
                 "<img src='images/Gem Blue.png'>" +
                 "<img src='images/Gem Green.png'>" +
                 "<img src='images/Gem Orange.png'>" +
-            "<h4>These are <b>Gems</b>, collect them to gain extra points.</h4>" +
+            "<h4>These are <b>Gems</b>, collect them to gain extra points, but who cares about about points?</h4>" +
+            "<h3>These are your enemies.</h3>" +
                 "<img src='images/enemy-bug.png' class='intro-bug'>" +
-            "<h4>This is a <b>Deadly Ladybug</b>, it moves from the left side of the screen to the right.</h4>" +
+            "<h4>This is a <b>Bug</b>, it moves from the left side of the screen to the right.</h4>" +
                 "<img src='images/centipede.png'>" +
-            "<h4>This is a <b>Centipede</b>, it is longer than a ladybug.</h4>" +
+            "<h4>This is a <b>Centipede</b>, it is longer than a bug.</h4>" +
                 "<img src='images/sidestepper.png' class='intro-bug'>" +
             "<h4>This is a <b>Sidestepper</b>, it occasionally switches lanes.</h4>" +
                 "<img src='images/centipede-sidestepper.png'>"+
@@ -77,6 +80,8 @@ var Engine = (function (global) {
             "<h4>This is a <b>White Bug</b>, it occasionally turns around and also can switch lanes.</h4>" +
                 "<img src='images/brood-mother.png'>" +
             "<h4>This is a <b>Brood Mother</b>, it spawns backtrackers and white bugs.</h4>" +
+                "<h3 id='top'>Try to get to level 15!</h3>" +
+            "<h3>Close this dialog to Play Game. Use arrow keys to move. Avoid bugs, touching them will make you lose a life. You begin with 5 lives.</h3>" + // TODO: Inlude link to resume and also explain to users how to use cheat codes!
                 "<br><a href='#top'>Scroll to Top</a>"
             ;
         bootbox.alert(helloMsg, function () {
@@ -459,6 +464,12 @@ var Engine = (function (global) {
         setTimeout(function () {
             player.sprite = 'images/char-boy.png';
         }, 500);
+        setTimeout(function () {
+            player.sprite = 'images/char-boy-blink3.png';
+        }, 515);
+        setTimeout(function () {
+            player.sprite = 'images/char-boy.png';
+        }, 630);
     }
 
     /**
@@ -541,7 +552,7 @@ var Engine = (function (global) {
 
             }
         }
-        if (gamestate.level > 15) {
+        if (gamestate.level > 5) {
             var rockNumber = randInt(1, 3);
             var allRockCoords = [];
             map.tiles.forEach(function (tile) {
