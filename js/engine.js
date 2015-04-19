@@ -28,7 +28,58 @@ var Engine = (function (global) {
      * to begin the game and calls the main function.
      */
     function init() {
-        bootbox.alert("Use arrow keys to move.", function () {
+        var bugInfo = [
+                {
+                    name: 'Deadly Ladybug',
+                    image: 'images/enemy-bug.png',
+                    description: 'it moves from the left side of the screen to the right.'
+                },
+                {
+                    name: 'Centipede',
+                    image: 'images/centipede.png',
+                    description: 'it is longer than a bug.'
+                },
+                {
+                    name: 'Sidestepper',
+                    image: 'images/sidestepper.png',
+                    description: 'it occasionally switches lanes.'
+                }
+            ];
+        var helloMsg = "<h3 id='top'>Use arrow keys to move. Avoid bugs, they will kill you.</h3>" +
+                "<img src='images/Key.png' class='intro-bug'>" +
+                "<img src='images/Door.png' class='intro-bug'><br>" +
+            "<h4>Your goal is to get the key, and then use it to get past the gate.</h4>" +
+                "<img src='images/Rock.png' class='intro-bug'><br>" +
+            "<h4>This is a <b>Rock</b>, they block your path - only bugs can walk through them.</h4>" +
+                "<img src='images/Heart.png'>" +
+            "<h4>This is a <b>Heart</b>, collect it to gain an extra life.</h4>" +
+                "<img src='images/Gem Blue.png'>" +
+                "<img src='images/Gem Green.png'>" +
+                "<img src='images/Gem Orange.png'>" +
+            "<h4>These are <b>Gems</b>, collect them to gain extra points.</h4>" +
+                "<img src='images/enemy-bug.png' class='intro-bug'>" +
+            "<h4>This is a <b>Deadly Ladybug</b>, it moves from the left side of the screen to the right.</h4>" +
+                "<img src='images/centipede.png'>" +
+            "<h4>This is a <b>Centipede</b>, it is longer than a ladybug.</h4>" +
+                "<img src='images/sidestepper.png' class='intro-bug'>" +
+            "<h4>This is a <b>Sidestepper</b>, it occasionally switches lanes.</h4>" +
+                "<img src='images/centipede-sidestepper.png'>"+
+            "<h4>This is a <b>Centipede Sidestepper</b>, it is larger than a bug and occasionally switches lanes.</h4>" +
+                    "<img src='images/speed-changer.png'>" +
+            "<h4>This is a <b>Speed Changer</b>, it occasionally changes speed.</h4>" +
+                "<img src='images/charger.png' class='intro-bug'>" +
+            "<h4>This is a <b>Charger</b>, it occasionally has a burst of speed.</h4>" +
+                    "<img src='images/slowpoke.png' class='intro-bug'>" +
+            "<h4>This is a <b>Slowpoke</b>, it moves very slowly.</h4>" +
+                    "<img src='images/backtracker-reverse.png' class='intro-bug'>" +
+            "<h4>This is a <b>Backtracker</b>, it occasionally turns around.</h4>" +
+                    "<img src='images/enemy-bug-white.png'>" +
+            "<h4>This is a <b>White Bug</b>, it occasionally turns around and also can switch lanes.</h4>" +
+                "<img src='images/brood-mother.png'>" +
+            "<h4>This is a <b>Brood Mother</b>, it spawns backtrackers and white bugs.</h4>" +
+                "<br><a href='#top'>Scroll to Top</a>"
+            ;
+        bootbox.alert(helloMsg, function () {
             setupNewGame();
             lastTime = Date.now();
             main();
@@ -102,6 +153,7 @@ var Engine = (function (global) {
         renderEntities();
         renderLives();
         renderScore();
+        renderLevel();
         renderHadouken();
         if (gamestate.level < 0) {
             invertCanvas();
@@ -165,8 +217,19 @@ var Engine = (function (global) {
         }
     }
 
+
     /**
      * Draws/writes the current score in the top right corner of the screen.
+     */
+    function renderLevel() {
+        ctx.font = "20px 'Press Start 2P'";
+        ctx.fillStyle = 'black';
+        ctx.textAlign = 'left';
+        ctx.fillText('Level: ' + gamestate.level, 620, 40);
+    }
+
+    /**
+     * Draws/writes the current level in the top right corner of the screen.
      */
     function renderScore() {
         ctx.font = "20px 'Press Start 2P'";
@@ -174,11 +237,7 @@ var Engine = (function (global) {
         ctx.textAlign = 'left';
         // Prevent the score overflowing off the canvas.  Plus, do the points
         // really matter?
-        if (gamestate.score > 10000) {
-            ctx.fillText('SCORE: A LOT!', 400, 40);
-        } else {
-            ctx.fillText('SCORE: ' + gamestate.score, 400, 40);
-        }
+            ctx.fillText('SCORE: ' + gamestate.score, 420, 40);
     }
 
     /**
@@ -329,6 +388,8 @@ var Engine = (function (global) {
         if (gamestate.level > DARK_LEVELS && gamestate.speed < 2.5) {
             gamestate.speed += 0.05;
         }
+
+
         map = createMap();
         // Set player x and y-coordinates.
         player.startX().startY();
@@ -376,22 +437,28 @@ var Engine = (function (global) {
      * a life pops up, and the player and enemy positions are reset.
      */
     function resetLevel() {
+        gamestate.remainingTime = 45;
+        if(gamestate.level > DARK_LEVELS){
+            gamestate.remainingTime += 15;
+        }
         player.lives -= 1;
-        pauseAlert(deathMessage);
         player.startX().startY();
-        allEnemies.forEach(function (enemy) {
-            enemy.startX().startY().setSpeed();
-            // If the enemy is a backtracker, when the level resets, it may be
-            // moving to the left and its sprite will be flipped.  This is why
-            // we need to set it back to the original sprite.
-            // (Or set it back to the original cow if the cow cheat is active).
-            if (enemy instanceof Backtracker) {
-                enemy.sprite = 'images/backtracker.png';
-                if (gamestate.activeCheats.cow) {
-                    enemy.sprite = 'images/Cow.png';
-                }
-            }
-        });
+        player.sprite = "images/char-boy-blink3.png";
+        setTimeout(function () {
+            player.sprite = 'images/char-boy.png';
+        }, 100);
+        setTimeout(function () {
+            player.sprite = 'images/char-boy-blink3.png';
+        }, 200);
+        setTimeout(function () {
+            player.sprite = 'images/char-boy.png';
+        }, 300);
+        setTimeout(function () {
+            player.sprite = 'images/char-boy-blink3.png';
+        }, 400);
+        setTimeout(function () {
+            player.sprite = 'images/char-boy.png';
+        }, 500);
     }
 
     /**
@@ -437,7 +504,9 @@ var Engine = (function (global) {
             // level.
             'end': null,
             // An array containing all the Rock instances on the map.
-            'rocks': []
+            'rocks': [],
+            // An array containing all the Water instances on the map.
+            'waters': []
         };
         // Choose random x-position for start and end points.  (Can't be
         // left or right-most tile)
@@ -453,6 +522,7 @@ var Engine = (function (global) {
                         map.tiles.push(new Stone(i, j));
                     } else {
                         map.tiles.push(new Water(i, j));
+                        map.waters.push(new Water(i, j)); // hack, removes 'drowning'
                     }
                     // Center of map does not change.
                 } else if (j === Y_STEP || j === 4 * Y_STEP) {
@@ -465,6 +535,7 @@ var Engine = (function (global) {
                         map.tiles.push(new Stone(i, j));
                     } else {
                         map.tiles.push(new Water(i, j));
+                        map.waters.push(new Water(i, j)); // hack, removes 'drowning'
                     }
                 }
 
@@ -554,16 +625,16 @@ var Engine = (function (global) {
      */
     function calcEnemyWeights() {
         var enemyWeights = {
-            'enemy': 1,
-            'charger': 1,
-            'backtracker': 1,
+            'enemy': 1.1,
+            'charger': 0.5,
+            'backtracker': 0.5,
             'sidestepper': 0,
-            'slowpoke': 1,
-            'centipede': 0,
+            'slowpoke': 0.5,
+            'centipede': 0.75,
             'centipedeSidestepper': 0,
             'backtrackerSidestepper': 0,
-            'broodMother': 0,
-            'speedChanger': 1
+            'broodMother': 0.01,
+            'speedChanger': 0
 
         };
         if (gamestate.level > 5) {

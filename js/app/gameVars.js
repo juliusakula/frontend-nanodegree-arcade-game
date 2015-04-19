@@ -167,8 +167,6 @@ var GameState = function () {
         'tomato': false
     };
     this.hadouken = false;
-
-
     this.tomato = false;
 };
 

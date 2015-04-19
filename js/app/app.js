@@ -167,8 +167,6 @@ var GameState = function () {
         'tomato': false
     };
     this.hadouken = false;
-
-
     this.tomato = false;
 };
 
@@ -892,7 +890,7 @@ var Player = function () {
     this.width = 60;
     this.height = 80;
     this.maxLives = 20;
-    this.lives = 10;
+    this.lives = 5;
     this.isInvincible = false;
     this.hasKey = false;
     this.startX();
@@ -1025,6 +1023,12 @@ Player.prototype.move = function (direction) {
             if (newX === rock.x && newY === rock.y) {
                 hitRock = true;
 
+            }
+        });
+        map.waters.forEach(function (water) {
+            //
+            if (newX === water.x && newY === water.y) {
+                hitRock = true;
             }
         });
         // If all these tests have been passed, move the player.
